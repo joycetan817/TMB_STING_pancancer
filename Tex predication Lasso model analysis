@@ -1,0 +1,97 @@
+###Lasso regression#####
+##Jiayi Tan 05/20/2022
+ 
+library(glmnet)
+library(dplyr)
+ 
+ 
+data_dir = "..."
+ 
+matrix = paste(data_dir, "input_matrix", sep = "") #parameter matrix input
+ 
+ 
+#Lasso model VIF value
+model=lm(Tex~CD79A+BATF3+CD274+CD8A+IFNg+CD68+TMB+STING+CD3G, data = matrix)
+ 
+vif(model)
+ 
+vif_values <- vif(model)
+ 
+#create horizontal bar chart to display each VIF value
+barplot(vif_values, main = "VIF Values", horiz = TRUE, col = "steelblue")
+ 
+#add vertical line at 5
+abline(v = 5, lwd = 3, lty = 2)
+ 
+ 
+ 
+#define response variable
+y=matrix$Tex
+#define matrix of predictor variables
+x=data.matrix(matrix[, c('TMB','CD68','BATF3','CD274','CD79A','STING')])
+ 
+#Lasso model
+ 
+y=matrix$Tex
+#define matrix of predictor variables
+x=data.matrix(matrix[, c('TMB','CD68','BATF3','CD274','CD79A','STING')])
+ 
+ 
+cv_model <- cv.glmnet(x, y, alpha = 1)
+ 
+#find optimal lambda value that minimizes test MSE
+best_lambda <- cv_model$lambda.min
+best_lambda
+ 
+best_model <- glmnet(x, y, alpha = 1, lambda = best_lambda)
+coef(best_model)
+ 
+y_predicted <- predict(best_model, s = best_lambda, newx = x)
+ 
+#find SST and SSE
+sst <- sum((y - mean(y))^2)
+sse <- sum((y_predicted - y)^2)
+ 
+#find R-Squared
+rsq <- 1 - sse/sst
+rsq
+ 
+ 
+ 
+#cross validation
+cros_vali=matrix
+coln=colnames(cros_vali)
+coln=coln[2:7]
+r2_sum=data.frame(matrix(NA,    # Create empty data frame
+                         nrow = length(coln),
+                         ncol = 1))
+colnames(r2_sum) = 'r_square'
+rownames(r2_sum)=coln
+ 
+for (kk in 1:length(coln)) {
+  remove_char=coln[kk]
+  test_vect=coln[coln != remove_char]
+ 
+  y=cros_vali$Tex
+  x=data.matrix(cros_vali[,test_vect])
+  cv_model <- cv.glmnet(x, y, alpha = 1)
+ 
+  #find optimal lambda value that minimizes test MSE
+  best_lambda <- cv_model$lambda.min
+  best_lambda
+ 
+  best_model <- glmnet(x, y, alpha = 1, lambda = best_lambda)
+  coef(best_model)
+ 
+  y_predicted <- predict(best_model, s = best_lambda, newx = x)
+ 
+  #find SST and SSE
+  sst <- sum((y - mean(y))^2)
+  sse <- sum((y_predicted - y)^2)
+ 
+  #find R-Squared
+  rsq <- 1 - sse/sst
+ 
+  r2_sum[kk, 1] = rsq
+}
+
