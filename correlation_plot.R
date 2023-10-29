@@ -42,7 +42,14 @@ ggsave(g, file = 'Y:/Joyce/TCGA_pancancer/manuscript_figure/tex_tmb_corr_pancanc
 
 
 
+#R value dotplot across cancer types
+#to-do: R value calculation script
 
+ggplot(tex_corr,aes(x=cancer_type, y = variable, color = r)) + 
+    geom_point(size=8) +theme_classic()+ scale_color_viridis(option = 'B',name = 'R value', limits = c(-1,1)) +
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),axis.text=element_text(size=14, color = "#000000"),
+          axis.title=element_text(size=14)) +
+    ylab('') + xlab('') 
 
 
 # correlation analysis between Tex and other major parameters
