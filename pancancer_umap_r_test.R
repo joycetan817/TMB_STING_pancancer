@@ -4,11 +4,10 @@ library(umap)
 
 theme_set(theme_bw(18))
 
-result=read.csv('Y:/Joyce/TCGA_pancancer/archetype_pca/pancancer_wtRSR_hypoxia_clst6/XCELL_kmean_pca_umap_results.csv')
-pancancer=read.csv('Y:/Joyce/TCGA_pancancer/all_extend_gene_signature_summ_pancancer_apoptosis.csv')
+result=read.csv('...') # input clustering analysis UMAP table
+pancancer=read.csv('...') # input pancancer signature table
 
-result$pid=result$X
-View(result)
+
 sub_pan=subset(pancancer, pid %in% result$pid)
 result=subset(result, pid %in% sub_pan$pid)
 
@@ -46,6 +45,8 @@ umap_df %>%
        y = "UMAP2",
        subtitle = "UMAP plot")
 #ggsave("UMAP_plot_example1.png")
+
+# UMAP plot by clusters
 umap_df %>%
     ggplot(aes(x = UMAP1, 
                y = UMAP2, color = cluster))+
@@ -53,6 +54,7 @@ umap_df %>%
     labs(x = "UMAP1",
          y = "UMAP2")+scale_color_manual(values=c("royalblue4","lightsalmon1","firebrick4","orangered2","#9FCAE6","cornflowerblue"))
 
+# Signature score overlay onto UMAP
 umap_df %>%
     ggplot(aes(x = UMAP1, 
                y = UMAP2, color = Tex))+
@@ -67,7 +69,7 @@ umap_df %>%
     labs(x = "UMAP1",
          y = "UMAP2")+scale_colour_viridis_c(option = 'turbo')
 
-color=rev(heat.colors(10, alpha = 0.7))
+
 umap_df %>%
 ggplot(aes(x = UMAP1, 
            y = UMAP2, color = STING))+
@@ -75,8 +77,8 @@ geom_point()+
 labs(x = "UMAP1",
      y = "UMAP2")+scale_colour_gradientn(colours= color)+facet_wrap(~cluster) +theme_bw()
 
-ggsave('Y:/Joyce/TCGA_pancancer/organize_cluster/umap_batf3_facet.png', dpi=300, device = 'png', height = 4, width =7 )
+ggsave('STING_by_cluster.png', dpi=300, device = 'png', height = 4, width =7 )
 
-+scale_colour_discrete(name='Cancer type')
+
 
 ggsave('umap_r.png', dpi=300, device = 'png', height = 6, width = 9)
