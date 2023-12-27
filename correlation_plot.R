@@ -17,7 +17,7 @@ g=ggplot(pancancer, aes(x=reorder(cancertype, Tex, FUN=median), y=Tex))+geom_box
 c<-g+theme_classic()+theme(axis.title.x=element_blank(),
                            axis.ticks.x = element_blank(),axis.text=element_text(size=14, color = "#000000"),
                            axis.title=element_text(size=14))+theme(axis.text.x = element_text(angle = 45, hjust = 1))
-ggsave(c, file = 'Y:/Joyce/TCGA_pancancer/manuscript_figure/tex_sigscore_across_pancancer_wpancreas.png', width = 9, height = 6, dpi= 300, units = "in", device = "png")
+ggsave(c, file = paste(data_dir, "tex_sigscore_across_pancancer_wpancreas.png", sep = ""), width = 9, height = 6, dpi= 300, units = "in", device = "png")
 
 pancancer$group_tex <- ifelse(pancancer$Tex > quantile(pancancer$Tex, 2/3), 'High',  ifelse(pancancer$Tex < quantile(pancancer$Tex, 1/3), 'Low', 'Medium'))
 
@@ -37,8 +37,7 @@ scat_cor<-ggscatter(pancancer, x = "Tex", y = "TMB", # genes correlate with sig.
 
 g <- scat_cor + theme_classic() + theme(axis.text=element_text(size=14, color = "#000000"),
                                         axis.title=element_text(size=14)) + xlab("Tex sig.score") +ylab("Tumor mutation burden")
-ggsave(g, file = 'Y:/Joyce/TCGA_pancancer/manuscript_figure/tex_tmb_corr_pancancer.png', width = 4
-       , height = 4, dpi= 300, units = "in", device = "png")
+ggsave(g, file = paste(data_dir, "tex_tmb_corr_pancancer.png", sep=""), width = 4, height = 4, dpi= 300, units = "in", device = "png")
 
 
 
@@ -50,6 +49,7 @@ ggplot(tex_corr,aes(x=cancer_type, y = variable, color = r)) +
     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),axis.text=element_text(size=14, color = "#000000"),
           axis.title=element_text(size=14)) +
     ylab('') + xlab('') 
+
 
 
 # correlation analysis between Tex and other major parameters
