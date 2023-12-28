@@ -35,12 +35,17 @@ import pandas as pd
 import datetime as dt
 import seaborn as sn
 import matplotlib.pyplot as plt
+import numpy as np
 
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score, davies_bouldin_score
 from sklearn.decomposition import PCA
 from scipy.stats import ranksums
+from sklearn import metrics
+from scipy.spatial.distance import cdist
+
+
 
 input_file = "Y:/Joyce/TCGA_pancancer/pancancer_variable_table.csv"
 
@@ -76,6 +81,28 @@ print("UMAP cost: "+str(dt.datetime.now()-ust))
 
 
 print("Determining optimal KMean cluster number...")
+#Elbow method using Distortion
+distortion = []
+mapping1 = {}
+K = range(1,10)
+X = pca_pcs[:,:use_pcs]
+for k in K:
+    # Building and fitting the model
+    kmeanModel = KMeans(n_clusters=k).fit(X)
+    kmeanModel.fit(X)
+ 
+    distortions.append(sum(np.min(cdist(X, kmeanModel.cluster_centers_,
+                                        'euclidean'), axis=1)) / X.shape[0])
+    mapping1[k] = sum(np.min(cdist(X, kmeanModel.cluster_centers_,
+                                   'euclidean'), axis=1)) / X.shape[0]
+
+plt.plot(K, distortions, 'bx-')
+plt.xlabel('Values of K')
+plt.ylabel('Distortion')
+plt.title('The Elbow Method using Distortion')
+plt.show()
+  
+#Silhouette score
 kmean_score_df = clst_metric(df=pca_pcs[:,:use_pcs], df_name="scaled_pca")
 kmean_score_df.to_excel(plot_pref+"kmeans_silhouette_score.xlsx")
 sn.scatterplot(data = kmean_score_df, x = "n_cluster", y = "silhouette_score", linewidth=0)
